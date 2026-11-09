@@ -80,6 +80,12 @@ Here are a few commands you can speak to the assistant:
 - "Show notes"
 - "Exit"
 
+## Project Screenshots
+
+The following screenshots show the development and working of my Voice Assistant project.
+
+All screenshots are available in the [Voice Assistant Screenshots](voice_assistent_screenshot/) folder.
+
 ## What I Learned
 
 Working on this project helped me understand how different Python libraries work together to build a practical application. I also learned how to handle voice input, generate spoken responses, process commands, and perform basic tasks through automation.
