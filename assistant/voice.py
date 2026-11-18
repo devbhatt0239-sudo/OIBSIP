@@ -1,4 +1,6 @@
 """Speech input/output helpers for macOS and other desktop platforms."""
+import platform
+import subprocess
 import speech_recognition as sr
 import pyttsx3
 
@@ -11,6 +13,9 @@ class VoiceEngine:
 
     def speak(self, text: str) -> None:
         print(f"Assistant: {text}")
+        if platform.system() == "Darwin":
+            subprocess.run(["say", "-r", str(self.rate), text], check=True)
+            return
         engine = pyttsx3.init()
         engine.setProperty("rate", self.rate)
         engine.say(text)
