@@ -1,6 +1,8 @@
 """Desktop dashboard for the Python Voice Assistant."""
 import subprocess
 import threading
+import json
+from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox, scrolledtext, simpledialog
 from datetime import datetime
@@ -26,11 +28,30 @@ class AssistantApp(ctk.CTk):
         self.minsize(720, 560)
         self.voice = VoiceEngine()
         self.ai = AIBrain()
-        self.history = []
+        self.memory_file = Path(__file__).resolve().parent.parent / "assistant_memory.json"
+        self.history = self._load_memory()
         self.busy = False
         self._build_ui()
         self.log("Assistant ready! Type a command or press Listen.")
         
+    def _load_memory(self):
+        try:
+            if self.memory_file.exists():
+                data = json.loads(self.memory_file.read_text(encoding="utf-8"))
+                return data if isinstance(data, list) else []
+        except (OSError, json.JSONDecodeError):
+            pass
+        return []
+
+    def _save_memory(self):
+        try:
+            self.memory_file.write_text(
+                json.dumps(self.history[-40:], ensure_ascii=False, indent=2),
+                encoding="utf-8"
+            )
+        except OSError as exc:
+            print("Could not save assistant memory:", exc)
+
     def _build_ui(self):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -190,6 +211,7 @@ class AssistantApp(ctk.CTk):
         answer = self.ai.ask(raw, self.history)
         self.history.extend([{"role": "user", "content": raw},
                              {"role": "assistant", "content": answer}])
+        self._save_memory()
         return answer, True
 
     def calculator_dialog(self):
