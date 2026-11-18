@@ -158,14 +158,16 @@ class AssistantApp(ctk.CTk):
     def handle_command(self, raw):
         query = raw.lower().strip()
 
-        # Detect app-launch commands even when speech recognition adds a greeting.
+        # App commands take priority over greetings, time/date and AI fallback.
         app_match = re.search(
-            r"\\bopen\\s+(google chrome|visual studio code|safari|chrome|vs code|vscode|terminal|finder|notes|calendar|music)\\b",
+            r"\bopen\s+(facetime|face time|google chrome|visual studio code|safari|chrome|vs code|vscode|terminal|finder|notes|calendar|calender|music)\b",
             raw,
             re.IGNORECASE
         )
         if app_match:
             app_name = app_match.group(1)
+            if app_name.lower() == "calender":
+                app_name = "Calendar"
             try:
                 open_mac_app(app_name)
                 return "Opening " + app_name, True
@@ -176,7 +178,7 @@ class AssistantApp(ctk.CTk):
             return "Goodbye!", True
         if query in {"hello", "hi", "hey", "hey assistant"}:
             return "Hello! Main ready hoon. Batao kya karna hai?", True
-        if "time" in query:
+        if re.search(r"\\btime\\b", query):
             return "The time is " + datetime.now().strftime("%I:%M %p"), True
         if "date" in query:
             return "Today's date is " + datetime.now().strftime("%d %B %Y"), True
