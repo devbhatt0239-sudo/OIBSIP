@@ -2,6 +2,7 @@
 import subprocess
 import threading
 import json
+import re
 from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox, scrolledtext, simpledialog
@@ -156,6 +157,20 @@ class AssistantApp(ctk.CTk):
 
     def handle_command(self, raw):
         query = raw.lower().strip()
+
+        # Detect app-launch commands even when speech recognition adds a greeting.
+        app_match = re.search(
+            r"\\bopen\\s+(google chrome|visual studio code|safari|chrome|vs code|vscode|terminal|finder|notes|calendar|music)\\b",
+            raw,
+            re.IGNORECASE
+        )
+        if app_match:
+            app_name = app_match.group(1)
+            try:
+                open_mac_app(app_name)
+                return "Opening " + app_name, True
+            except Exception:
+                return "I couldn't open " + app_name + ". Please check that it is installed.", True
         if query in {"exit", "quit", "close assistant"}:
             self.after(300, self.destroy)
             return "Goodbye!", True
@@ -181,13 +196,6 @@ class AssistantApp(ctk.CTk):
             return "Your note has been saved.", True
         if "show notes" in query or "read my notes" in query:
             return read_notes() or "You have no saved notes yet.", False
-        if query.startswith("open "):
-            app_name = raw[5:].strip()
-            try:
-                open_mac_app(app_name)
-                return "Opening " + app_name, True
-            except Exception:
-                return "I couldn't open " + app_name + ". Check the app name.", True
         if "volume" in query:
             if "mute" in query:
                 set_volume(0)
