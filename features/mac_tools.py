@@ -14,6 +14,9 @@ APP_NAMES = {
     "finder": "Finder",
     "notes": "Notes",
     "calendar": "Calendar",
+    "calender": "Calendar",
+    "facetime": "FaceTime",
+    "face time": "FaceTime",
     "music": "Music",
 }
 
