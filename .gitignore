@@ -6,3 +6,5 @@ __pycache__/
 .DS_Store
 notes.txt
 assistant.db
+*.backup
+assistant_memory.json
